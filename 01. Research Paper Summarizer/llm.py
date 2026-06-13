@@ -1,18 +1,23 @@
 import os
+
 from dotenv import load_dotenv
 
 from langchain_huggingface import HuggingFaceEndpoint
 
 load_dotenv()
 
-MODEL_ID = os.getenv("MODEL_ID")
 
-def load_llm():
+def load_llm(model_config):
 
-    llm = HuggingFaceEndpoint(
-        repo_id=MODEL_ID,
-        max_new_tokens=512,
-        temperature=0.4
+    return HuggingFaceEndpoint(
+        repo_id=model_config["model_name"],
+        huggingfacehub_api_token=os.getenv(
+            "HUGGINGFACEHUB_API_TOKEN"
+        ),
+        temperature=model_config["temperature"],
+        max_new_tokens=model_config["max_new_tokens"],
+        top_p=model_config["top_p"],
+        repetition_penalty=model_config[
+            "repetition_penalty"
+        ]
     )
-
-    return llm

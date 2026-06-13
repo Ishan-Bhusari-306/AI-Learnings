@@ -1,13 +1,16 @@
 import json
+
 import streamlit as st
 
-from langchain.prompts import PromptTemplate
+from langchain import PromptTemplate
+
 from research_papers import PAPERS
 from llm import load_llm
 
-# -----------------------
-# Page Config
-# -----------------------
+
+# -------------------------
+# PAGE CONFIG
+# -------------------------
 
 st.set_page_config(
     page_title="Research Paper Summarizer",
@@ -15,24 +18,47 @@ st.set_page_config(
     layout="centered"
 )
 
+# -------------------------
+# LOAD JSON CONFIG
+# -------------------------
+
+with open(
+    "prompts/prompt_config.json",
+    "r",
+    encoding="utf-8"
+) as f:
+
+    config = json.load(f)
+
+MODEL_CONFIG = config["model_config"]
+PROMPT_TEMPLATE = config["prompt_template"]
+
+
+# -------------------------
+# TITLE
+# -------------------------
+
 st.title("📚 Research Paper Summarizer")
 
-st.write(
-    "Choose a research paper, summary length, and explanation style."
+st.markdown(
+    """
+Generate customized summaries of
+famous Machine Learning and NLP papers.
+"""
 )
 
-# -----------------------
-# Dropdown 1
-# -----------------------
+# -------------------------
+# DROPDOWN 1
+# -------------------------
 
 selected_paper = st.selectbox(
     "Select Research Paper",
     list(PAPERS.keys())
 )
 
-# -----------------------
-# Dropdown 2
-# -----------------------
+# -------------------------
+# DROPDOWN 2
+# -------------------------
 
 summary_length = st.selectbox(
     "Select Summary Length",
@@ -43,11 +69,11 @@ summary_length = st.selectbox(
     ]
 )
 
-# -----------------------
-# Dropdown 3
-# -----------------------
+# -------------------------
+# DROPDOWN 3
+# -------------------------
 
-explanation_style = st.selectbox(
+style = st.selectbox(
     "Select Explanation Style",
     [
         "Beginner Friendly",
@@ -58,46 +84,52 @@ explanation_style = st.selectbox(
     ]
 )
 
-# -----------------------
-# Submit Button
-# -----------------------
+# -------------------------
+# SUBMIT BUTTON
+# -------------------------
 
-submit = st.button("Generate Summary")
+generate_btn = st.button(
+    "🚀 Generate Summary",
+    use_container_width=True
+)
 
-if submit:
+# -------------------------
+# GENERATE
+# -------------------------
 
-    with open(
-        "prompts/prompt_template.json",
-        "r",
-        encoding="utf-8"
-    ) as f:
+if generate_btn:
 
-        prompt_data = json.load(f)
+    paper_content = PAPERS[selected_paper]
 
-    prompt_template = PromptTemplate(
+    prompt = PromptTemplate(
+        template=PROMPT_TEMPLATE,
         input_variables=[
             "paper",
             "length",
             "style"
-        ],
-        template=prompt_data["template"]
+        ]
     )
 
-    final_prompt = prompt_template.format(
-        paper=PAPERS[selected_paper],
+    final_prompt = prompt.format(
+        paper=paper_content,
         length=summary_length,
-        style=explanation_style
+        style=style
     )
 
-    llm = load_llm()
+    llm = load_llm(MODEL_CONFIG)
 
-    with st.spinner("Generating summary..."):
+    with st.spinner(
+        "Generating summary using Llama 3.2 3B..."
+    ):
 
         response = llm.invoke(final_prompt)
 
-    # Output Text Box
+    st.markdown("---")
+
+    st.subheader("Generated Summary")
+
     st.text_area(
-        label="Generated Summary",
+        label="Output",
         value=response,
-        height=400
+        height=450
     )

@@ -1,0 +1,10 @@
+{
+    "model_config": {
+        "model_name": "meta-llama/Llama-3.2-3B-Instruct",
+        "temperature": 0.3,
+        "max_new_tokens": 700,
+        "top_p": 0.9,
+        "repetition_penalty": 1.1
+    },
+    "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\nYou are an expert AI researcher, professor, technical writer and educator.\n\nYour task is to explain research papers accurately while adapting to the user's requested explanation style and summary length.\n\nAlways focus on:\n- Clarity\n- Correctness\n- Educational value\n- Structured explanations\n\n<|eot_id|>\n\n<|start_header_id|>user<|end_header_id|>\n\nResearch Paper:\n{paper}\n\nRequested Summary Length:\n{length}\n\nRequested Explanation Style:\n{style}\n\nInstructions:\n1. Explain the problem being solved.\n2. Explain the proposed solution.\n3. Explain the architecture or methodology.\n4. Highlight key innovations.\n5. Discuss strengths and limitations.\n6. Explain why the paper became influential.\n7. Discuss practical applications.\n8. Adapt to the requested style.\n9. Generate approximately the requested length.\n10. Use headings and proper structure.\n\nGenerate the summary.\n\n<|eot_id|>\n\n<|start_header_id|>assistant<|end_header_id|>"
+}
